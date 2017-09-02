@@ -36,10 +36,12 @@ def serialRead(ArticleBank, COMM=None):
         YEAR = ArticleBank[A]['year']
         REFCOUNT = ArticleBank[A]['refcount']
         URL = baseURL + UID
-
+        JOURNAL = ArticleBank[A]['journal']
+        TITLE = ArticleBank[A]['title']
         VIEW = "%s\t\t\t\t%i/%i\n" % (UID, A+1, len(ArticleBank)) +\
                "\t\t%i\t\t\trefs: %s\n" % (YEAR, REFCOUNT) +\
-               "%s\n" % limitTextWidth(ArticleBank[A]['title'])
+               "%s\n\n" % limitTextWidth(TITLE)+\
+                                       "\t%s\n" % limitTextWidth(JOURNAL)
         
         print(VIEW)
         if Finish:

@@ -2,7 +2,8 @@
 from Bio import Entrez
 from urllib.error import HTTPError
 import xmltodict
-Entrez.email = "gabriel_scf@hotmail.com"
+
+Entrez.email = "space_monster@hotmail.com"
 def parsedEntrezSearch(**kwargs):
 
     RESULT = Entrez.esearch(**kwargs)
@@ -27,7 +28,8 @@ def getArticleInfo(UID):
                    'uid': INFO['Id'],
                    'abstract': '',
                    'year': int(INFO['SO'][:4]),
-                   'refcount': INFO['PmcRefCount']
+                   'refcount': INFO['PmcRefCount'],
+                   'journal': INFO['FullJournalName']
                    }
     
     return ArticleData
