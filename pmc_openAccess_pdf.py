@@ -2,11 +2,13 @@
 import os
 import csv
 from ftplib import FTP
+import urllib
+import xmltodict
 
-list_file = {'package': 'oa_comm_use_file_list.csv',
+
+
+list_file = {'package': 'file_list.csv',
              'standalone': 'oa_non_comm_use_pdf.csv'}
-
-HOST = 'ftp.ncbi.nlm.nih.gov'
 
 def checkFileList(CONN, list_file):
     W = os.path.isfile(list_file)
@@ -19,36 +21,64 @@ def checkFileList(CONN, list_file):
 
     else:
         print("File list Found!")
-        
 
-def save(data):
-    Q=open("PDF.pdf", 'wb')
-    Q.write(data)
+def locateArticleByRequest(ID):
+    URL='https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id='
+    url = URL+ID
+
+    Q=urllib.request.urlopen(url)
+
+    R=Q.read()
+    R=xmltodict.parse(R)
     
+    try:
+        ADDR=R['OA']['records']['record']['link']['@href']
+        ADDR=ADDR.split('.gov/')[1]
+    except:
+        return False
 
-def retrieveArticle(ID, list_file):
+    return ADDR
 
-    ID = str(ID)
-    ID = 'PMC'+ID if not 'PMC' in ID else ID
-    file_list = open(list_file, 'r')
-    FileList=csv.reader(file_list)
-    ROW = 'NOT FOUND!'
-    for row in FileList:
+def locateArticleByLocalFileList(ID, list_file, PMCmode):
+    ChkFileList = open(list_file[PMCmode], 'r')
+    ChkFileList=csv.reader(ChkFileList)
+    ROW = ''
+    for row in ChkFileList:
         if ID in row:
             ROW = row
-            print(ROW)
 
+    if not ROW:
+        return False
 
-    print(ROW)
     base_addr = 'pub/pmc/'
     ADDR = base_addr + ROW[0]
+    return ADDR
 
-    cmd = 'RETR %s' % ADDR
-    CONN.retrbinary(cmd, blocksize=8192, callback=open(ADDR.split('/')[-1], 'wb').write)
+def download(CONN, ID, list_file, PMCmode):
+    ID = str(ID)
+    ID = 'PMC'+ID if not 'PMC' in ID else ID
 
+    ADDR = locateArticleByLocalFileList(ID, list_file, PMCmode)
+    ADDR2 = locateArticleByRequest(ID)
 
-CONN=FTP(HOST)
-CONN.login()
-file_list = list_file['standalone']
-checkFileList(CONN, file_list)
-retrieveArticle(4516033, file_list)
+    #print(ADDR, list_file)
+    #print(ADDR2)
+
+    if ADDR:
+        print('downloading...'+str(ROW))
+        local_filename = ADDR.split('/')[-1]
+        cmd = 'RETR %s' % ADDR
+        CONN.retrbinary(cmd, blocksize=8192, callback=open(local_filename, 'wb').write)
+    else:
+        print('ARTICLE NOT FOUND!')
+        if PMCmode=='standalone':
+            download(CONN, ID, list_file)
+                     
+def retrieveArticle(ID, PMCmode='standalone'):
+    assert(PMCmode in list_file.keys())
+    HOST = 'ftp.ncbi.nlm.nih.gov'
+    CONN=FTP(HOST)
+    CONN.login()
+    file_list = list_file[PMCmode]
+    checkFileList(CONN, file_list)
+    download(CONN, ID, file_list, PMCmode)

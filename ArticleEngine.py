@@ -5,7 +5,23 @@ import collections
 import textwrap
 import webbrowser
 from multiprocessing import Process, Queue
+from pmc_openAccess_pdf import retrieveArticle
 import sys
+
+reader_help = '''
+READER COMMANDS:
+
+b      Previous Article;
+e      Terminate viewer;
+v      Open article on browser;
+n      Open article on broser, new tab;
+
+d      Download article, if available on NCBI FTP server. gzip contains XML text, images, and maybe a pdf;
+D      Download article from FTP, pdf version;
+
+a      View abstract for current article;
+help   View this help message; hope it helps.
+'''
 
 def limitTextWidth(Words, Span=72):
     return textwrap.fill(Words, Span, subsequent_indent='  ')
@@ -59,7 +75,13 @@ def serialRead(ArticleBank, COMM=None):
             showAbstract(ArticleBank[A]['abstract'])
         if 'b' in k:
             A -= 2
-
+        if 'd' in k:
+            retrieveArticle(UID, PMCmode='standalone')
+        if 'D' in k:
+            retrieveArticle(UID, PMCmode='package')
+        if 'help' in k:
+            print(reader_help)
+            
         A+=1
         
 def backgroundRenderingRead(ArticleList, options, PIPE):
@@ -71,7 +93,6 @@ def backgroundRenderingRead(ArticleList, options, PIPE):
                    
 def parseAbstract(Abstract):
     #print("DEBUG Abstract is a %s.\n" % type(Abstract))
-
 
     if type(Abstract == str):
         Abstract = [Abstract]

@@ -17,6 +17,8 @@ from snpedia import searchSnpedia
 import warnings # SUPRESS ALL WARNINGS; BAD IDEA;
 warnings.filterwarnings("ignore")
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 from multiprocessing import Process, Pipe
 parser = optparse.OptionParser()
 parser.add_option('-n', '--snp', dest='SNP', default='')
