@@ -4,7 +4,7 @@ import csv
 from ftplib import FTP
 import urllib
 import xmltodict
-
+from multiprocessing import Process
 
 
 list_file = {'package': 'file_list.csv',
@@ -39,7 +39,7 @@ def locateArticleByRequest(ID):
 
     return ADDR
 
-def locateArticleByLocalFileList(ID, list_file, PMCmode):
+def locateArticleByLocalFileList(ID, PMCmode):
     ChkFileList = open(list_file[PMCmode], 'r')
     ChkFileList=csv.reader(ChkFileList)
     ROW = ''
@@ -54,11 +54,11 @@ def locateArticleByLocalFileList(ID, list_file, PMCmode):
     ADDR = base_addr + ROW[0]
     return ADDR
 
-def download(CONN, ID, list_file, PMCmode):
+def download(CONN, ID, PMCmode):
     ID = str(ID)
     ID = 'PMC'+ID if not 'PMC' in ID else ID
 
-    ADDR = locateArticleByLocalFileList(ID, list_file, PMCmode)
+    ADDR = locateArticleByLocalFileList(ID, PMCmode)
     ADDR2 = locateArticleByRequest(ID)
 
     #print(ADDR, list_file)
@@ -71,8 +71,8 @@ def download(CONN, ID, list_file, PMCmode):
         CONN.retrbinary(cmd, blocksize=8192, callback=open(local_filename, 'wb').write)
     else:
         print('ARTICLE NOT FOUND!')
-        if PMCmode=='standalone':
-            download(CONN, ID, list_file)
+        #if PMCmode=='standalone': #try package, possible to find.
+        #    download(CONN, ID, 'package')
                      
 def retrieveArticle(ID, PMCmode='standalone'):
     assert(PMCmode in list_file.keys())
@@ -81,4 +81,11 @@ def retrieveArticle(ID, PMCmode='standalone'):
     CONN.login()
     file_list = list_file[PMCmode]
     checkFileList(CONN, file_list)
-    download(CONN, ID, file_list, PMCmode)
+    if type(ID) == list:
+        procs=[]
+        for _ID in ID:
+            procs.append(Process(target=download, args=[CONN, _ID, PMCmode]))
+    else:
+        download(CONN, ID, PMCmode)
+
+

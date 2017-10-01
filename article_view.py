@@ -26,7 +26,9 @@ parser.add_option('-S','--search', dest='Search', action='store_true', default=F
 parser.add_option('-m','--pubmed', dest='PubmedSearch', default='')
 parser.add_option('-p', '--snpedia', dest='snpedia', help='Search for articles on snpedia')
 
-parser.add_option('--refreshList', dest='RefreshList', action='store_true', default=False)
+parser.add_option('-i', '--info', dest='Info', default='', help='Print citation info only;')
+
+parser.add_option('--refreshList', dest='RefreshList', action='store_ "Most people agree that mammals, and humans in particular, are more complex than a worm or a fruit fly, without reatrue', default=False)
 
 parser.add_option('-r', '--recent', dest='Recent', default=None, type="int")
 parser.add_option('-R', '--relevance', dest='Relevance', default=None, type="int")
@@ -61,7 +63,8 @@ def searchGene_dbSNPArticles(GeneName):
 
 def getArticleBank(searchFunction, keyword):
     ArticleIDs = searchFunction(keyword)
-    ArticleBank = pubmedFetchArticles(ArticleIDs)
+    
+    ArticleBank = pubmedFetchArticles(ArticleIDs) if ArticleIDs else []
     
     return ArticleBank
 
@@ -79,6 +82,14 @@ if __name__ == '__main__':
     if options.snpedia:
         ArticleBank += getArticleBank(searchSnpedia, options.snpedia)
 
+    if options.Info:
+        ArticleInfo = getArticleBank(pubmedSearch, options.Info)
+        ArticleInfo = evaluateArticles(ArticleInfo,options)[0]
+        print("%s\n%s\n%s %s [%s]" % (ArticleInfo['authors'],
+                                       ArticleInfo['title'],
+                                       ArticleInfo['journal'],
+                                       ArticleInfo['year'],
+                                       ArticleInfo['uid']))
 
     if ArticleBank:
         if options.ASYNC:
@@ -92,5 +103,5 @@ if __name__ == '__main__':
             print("Starting serial read on %i articles." % len(ArticleBank))
             ArticleBank = evaluateArticles(ArticleBank, options)
             serialRead(ArticleBank)
-    else:
+    elif not options.Info:
         print("No articles found.")

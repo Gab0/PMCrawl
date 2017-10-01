@@ -62,6 +62,8 @@ def serialRead(ArticleBank, COMM=None):
         print(VIEW)
         if Finish:
             continue
+        if A==len(ArticleBank)-1:
+            print("Last article;\n\tPressing ENTER will terminate session.")
         k=input()
         if 'v' in k:
             print("Opening article in browser;")
@@ -77,10 +79,17 @@ def serialRead(ArticleBank, COMM=None):
             A -= 2
         if 'd' in k:
             retrieveArticle(UID, PMCmode='standalone')
+            A-=1
         if 'D' in k:
             retrieveArticle(UID, PMCmode='package')
+            A-=1
+        if 'ALL' in k:
+            retrieveArticle([x['uid'] for x in ArticleBank],
+                            PMCmode='standalone')
+            
         if 'help' in k:
             print(reader_help)
+            A-=1
             
         A+=1
         

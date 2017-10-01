@@ -29,7 +29,8 @@ def getArticleInfo(UID):
                    'abstract': '',
                    'year': int(INFO['SO'][:4]),
                    'refcount': INFO['PmcRefCount'],
-                   'journal': INFO['FullJournalName']
+                   'journal': INFO['FullJournalName'],
+                   'authors': '; '.join(INFO['AuthorList'])
                    }
     
     return ArticleData

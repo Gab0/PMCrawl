@@ -21,7 +21,9 @@ def searchSnpedia(keywords):
     request = request.queryGen()
     for W in request:
         List = W['query']['search']
-
+    if not List:
+        print("Search returns zero.")
+        return []
     ArticleIdBank = []
     print("Found %i SNP pages" % len(List))
     for w in range(len(List)):
@@ -32,7 +34,7 @@ def searchSnpedia(keywords):
         
         if len(text) > 1:
             PageArticleIds =[] 
-            for S in [r'{{PMID\|', r'{{PMC\|']:
+            for S in [r'{{PMID\|', r'{{PMC\|', r'\|PMID=']:
                 Data = list(re.finditer(S, text))
                 L = [ m.end() for m in Data ]
                 PageArticleIds += [text[ x:x+re.search(r"[^0-9]", text[x:]).span()[0] ] for x in L]
