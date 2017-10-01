@@ -28,7 +28,7 @@ parser.add_option('-p', '--snpedia', dest='snpedia', help='Search for articles o
 
 parser.add_option('-i', '--info', dest='Info', default='', help='Print citation info only;')
 
-parser.add_option('--refreshList', dest='RefreshList', action='store_ "Most people agree that mammals, and humans in particular, are more complex than a worm or a fruit fly, without reatrue', default=False)
+parser.add_option('--refreshList', dest='RefresList', action='store_true', default=False)
 
 parser.add_option('-r', '--recent', dest='Recent', default=None, type="int")
 parser.add_option('-R', '--relevance', dest='Relevance', default=None, type="int")
