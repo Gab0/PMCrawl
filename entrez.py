@@ -14,8 +14,7 @@ def parsedEntrezSearch(**kwargs):
         print(ResultList)
         raise
         return []
-    
-    
+
     if ResultList:
         return ResultList
     return []
@@ -26,13 +25,16 @@ def getArticleInfo(UID):
 
     ArticleData = {'title': INFO['Title'],
                    'uid': INFO['Id'],
-                   'abstract': '',
                    'year': int(INFO['SO'][:4]),
                    'refcount': INFO['PmcRefCount'],
                    'journal': INFO['FullJournalName'],
-                   'authors': '; '.join(INFO['AuthorList'])
+                   'authors': '; '.join(INFO['AuthorList']),
+
+                   # attributes not found on esummary;
+                   'abstract': '',
+                   'keywords': ''
                    }
-    
+
     return ArticleData
 
 def searchSNPs(Query):
@@ -58,9 +60,9 @@ def pubmedSearch(SearchTerm):
 def pubmedFetchArticles(PUBMED_IDLIST):
     RawArticles = Entrez.efetch(db='pubmed', id=PUBMED_IDLIST,
                                 retmax=25000, rettype='xml')
-    
+
     RawArticles = Entrez.read(RawArticles)
-    
+
     if 'PubmedArticle' in RawArticles.keys():
         RawArticles = RawArticles['PubmedArticle']
     else:

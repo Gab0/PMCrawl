@@ -47,19 +47,25 @@ def serialRead(ArticleBank, COMM=None):
            (COMM and not ArticleBank):
             print("Loading more Articles...")
             ArticleBank += COMM.recv()
-            
+
         UID = ArticleBank[A]['uid']
+        URL = baseURL + UID
+
         YEAR = ArticleBank[A]['year']
         REFCOUNT = ArticleBank[A]['refcount']
-        URL = baseURL + UID
         JOURNAL = ArticleBank[A]['journal']
         TITLE = ArticleBank[A]['title']
+        KEYWORDS = ArticleBank[A]['keywords']
+
         VIEW = "%s\t\t\t\t%i/%i\n" % (UID, A+1, len(ArticleBank)) +\
                "\t\t%i\t\t\trefs: %s\n" % (YEAR, REFCOUNT) +\
                "%s\n\n" % limitTextWidth(TITLE)+\
                                        "\t%s\n" % limitTextWidth(JOURNAL)
         
         print(VIEW)
+        for K in range(len(KEYWORDS)):
+            print("%s%s" % (' '*K, str(KEYWORDS[K])))
+
         if Finish:
             continue
         if A==len(ArticleBank)-1:
@@ -129,14 +135,16 @@ def evaluateArticles(RawArticles, options, Verbose=True):
         IDBase = Article['PubmedData']['ArticleIdList']
         ENTRY = IDBase[0]
         UID = str(ENTRY)
+        Article_ = Article['MedlineCitation']
         try:
-            ABSTRACT = Article['MedlineCitation']['Article']['Abstract']['AbstractText']
+            ABSTRACT = Article_['Article']['Abstract']['AbstractText']
+            ABSTRACT = ABSTRACT[0] if type(ABSTRACT) == list else ABSTRACT
         except:
             print("Failed to read Abstract.")
             ABSTRACT = []
             pass
 
-        try:
+        try: # try maybe not neccessary;
             ArticleData = getArticleInfo(UID)
         except:
             print(sys.exc_info()[0])
@@ -144,6 +152,10 @@ def evaluateArticles(RawArticles, options, Verbose=True):
             continue
 
         ArticleData['abstract'] = ABSTRACT
+        try:
+            ArticleData['keywords'] = Article_['KeywordList'][0]
+        except:
+            pass
                 
         N+=1
         if Verbose:
