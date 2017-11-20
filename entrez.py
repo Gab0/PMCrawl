@@ -31,7 +31,7 @@ def getArticleInfo(UID):
                    'authors': '; '.join(INFO['AuthorList']),
 
                    # attributes not found on esummary;
-                   'abstract': '',
+                   'abstract': [],
                    'keywords': ''
                    }
 

@@ -7,6 +7,7 @@ import webbrowser
 from multiprocessing import Process, Queue
 from pmc_openAccess_pdf import retrieveArticle
 import sys
+import os
 
 reader_help = '''
 READER COMMANDS:
@@ -24,10 +25,13 @@ help   View this help message; hope it helps.
 '''
 
 def limitTextWidth(Words, Span=72):
-    return textwrap.fill(Words, Span, subsequent_indent='  ')
+    rows, columns = os.popen('stty size', 'r').read().split()
+    ttycolumns=int(columns)
+    return textwrap.fill(Words, min(Span, ttycolumns), subsequent_indent='  ')
 
 def showAbstract(AbstractList):
-
+    if type(AbstractList) == str:
+        AbstractList = [AbstractList]
     AbstractList += ["\nEND OF ABSTRACT;\n"]
 
     for A in AbstractList:
@@ -56,6 +60,7 @@ def serialRead(ArticleBank, COMM=None):
         JOURNAL = ArticleBank[A]['journal']
         TITLE = ArticleBank[A]['title']
         KEYWORDS = ArticleBank[A]['keywords']
+        AUTHORS = ArticleBank[A]['authors']
 
         VIEW = "%s\t\t\t\t%i/%i\n" % (UID, A+1, len(ArticleBank)) +\
                "\t\t%i\t\t\trefs: %s\n" % (YEAR, REFCOUNT) +\
@@ -80,6 +85,7 @@ def serialRead(ArticleBank, COMM=None):
         if 'e' in k:
             Finish = True
         if 'a' in k:
+            print(AUTHORS)
             showAbstract(ArticleBank[A]['abstract'])
         if 'b' in k:
             A -= 2
@@ -108,9 +114,9 @@ def backgroundRenderingRead(ArticleList, options, PIPE):
                    
 def parseAbstract(Abstract):
     #print("DEBUG Abstract is a %s.\n" % type(Abstract))
-
-    if type(Abstract == str):
-        Abstract = [Abstract]
+    
+    if type(Abstract) != list:
+        Abstract = [str(Abstract)]
     else:
         try:
             Abstract = [ Abstract[x] for x in Abstract.keys() ]
@@ -123,6 +129,7 @@ def parseAbstract(Abstract):
             Abstract = [ Entry['#text'] for Entry in Abstract ]
         except:
             print(Abstract)
+            exit()
     
     return Abstract
 
@@ -139,6 +146,7 @@ def evaluateArticles(RawArticles, options, Verbose=True):
         try:
             ABSTRACT = Article_['Article']['Abstract']['AbstractText']
             ABSTRACT = ABSTRACT[0] if type(ABSTRACT) == list else ABSTRACT
+            ABSTRACT = parseAbstract(ABSTRACT)
         except:
             print("Failed to read Abstract.")
             ABSTRACT = []

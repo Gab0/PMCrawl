@@ -2,7 +2,6 @@
 
 import webbrowser
 import sys
-import optparse
 import os
 import re
 import collections
@@ -13,6 +12,7 @@ import xmltodict
 from ArticleEngine import evaluateArticles, serialRead, backgroundRenderingRead
 from entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
 from snpedia import searchSnpedia
+from Options import options, args
 
 import warnings # SUPRESS ALL WARNINGS; BAD IDEA;
 warnings.filterwarnings("ignore")
@@ -20,21 +20,6 @@ warnings.filterwarnings("ignore")
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 from multiprocessing import Process, Pipe
-parser = optparse.OptionParser()
-parser.add_option('-n', '--snp', dest='SNP', default='')
-parser.add_option('-S','--search', dest='Search', action='store_true', default=False)
-parser.add_option('-m','--pubmed', dest='PubmedSearch', default='')
-parser.add_option('-p', '--snpedia', dest='snpedia', help='Search for articles on snpedia')
-
-parser.add_option('-i', '--info', dest='Info', default='', help='Print citation info only;')
-
-parser.add_option('--refreshList', dest='RefresList', action='store_true', default=False)
-
-parser.add_option('-r', '--recent', dest='Recent', default=None, type="int")
-parser.add_option('-R', '--relevance', dest='Relevance', default=None, type="int")
-
-parser.add_option('-a', '--async', dest='ASYNC', action='store_true',
-                  default=False, help='Run in async mode.')
 '''
 Firefox options to properly open links in current tab:
 ## about:config ##
@@ -71,7 +56,6 @@ def getArticleBank(searchFunction, keyword):
 splitTerm = lambda TERM: TERM.split(' ')
 
 if __name__ == '__main__':
-    options, args = parser.parse_args()
 
     ArticleBank = []
     if options.SNP:
