@@ -1,13 +1,13 @@
 from wikitools import wiki, category, page, api
 import re
-import optparse
-site = wiki.Wiki("http://bots.snpedia.com/api.php")                  # open snpedia
-snps = category.Category(site, "Is_a_snp")
-snpedia = []
+
 
 
 
 def searchSnpedia(keywords):
+    site = wiki.Wiki("http://bots.snpedia.com/api.php")                  # open snpedia
+    snps = category.Category(site, "Is_a_snp")
+    snpedia = []
     params = {'action': 'query',
               'list': 'search',
               'srlimit': 5000,
