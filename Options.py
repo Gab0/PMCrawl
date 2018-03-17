@@ -1,7 +1,7 @@
 #!/bin/python
 
 import optparse
-print("uaehaeuh")
+
 parser = optparse.OptionParser()
 parser.add_option('-n', '--snp', dest='SNP', default='')
 parser.add_option('-S','--search', dest='Search', action='store_true', default=False)
