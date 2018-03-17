@@ -67,7 +67,10 @@ if __name__ == '__main__':
     elif options.snpedia:
         ArticleBank += getArticleBank(searchSnpedia, options.snpedia)
 
-    else:#if options.PubmedSearch:
+    else:
+        if not options.PubmedSearch:
+            # following subterfuge is questionable.
+            options.PubmedSearch = sys.argv[1]
         ArticleBank += getArticleBank(pubmedSearch, options.PubmedSearch)
 
     if options.Info:
