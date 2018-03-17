@@ -20,6 +20,7 @@ warnings.filterwarnings("ignore")
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 from multiprocessing import Process, Pipe
+
 '''
 Firefox options to properly open links in current tab:
 ## about:config ##
@@ -57,15 +58,17 @@ def getArticleBank(searchFunction, keyword):
 splitTerm = lambda TERM: TERM.split(' ')
 
 if __name__ == '__main__':
-    print(options)
+    #print(options)
     ArticleBank = []
+
     if options.SNP:
         for GeneName in splitTerm(options.SNP):
             ArticleBank += getArticleBank(searchGene_dbSNPArticles, GeneName)
-    if options.PubmedSearch:
-        ArticleBank += getArticleBank(pubmedSearch, options.PubmedSearch)
-    if options.snpedia:
+    elif options.snpedia:
         ArticleBank += getArticleBank(searchSnpedia, options.snpedia)
+
+    else:#if options.PubmedSearch:
+        ArticleBank += getArticleBank(pubmedSearch, options.PubmedSearch)
 
     if options.Info:
         ArticleInfo = getArticleBank(pubmedSearch, options.Info)
