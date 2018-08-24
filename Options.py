@@ -19,4 +19,6 @@ parser.add_option('-a', '--async', dest='ASYNC', action='store_true',
                   default=False, help='Run in async mode.')
 parser.add_option('-l', dest='ShowList', action='store_true', default=False, help='show list of results as csv PMIDs')
 
+parser.add_option('-d', dest='makeDoiList', action='store_true', default=False, help='Write a doi list of search results.')
+
 options, args = parser.parse_args()

@@ -28,6 +28,7 @@ browser.link.open_newwindow=1
 browser.link.open_newwindow.restriction=0
 '''
 
+
 def searchGene_dbSNPArticles(GeneName):
     Query = "%s AND human[Organism]" % GeneName
     print("Searching for <%s> @ dbSNP." % Query)
@@ -44,8 +45,9 @@ def searchGene_dbSNPArticles(GeneName):
         return []
     print("Found %i articles " % len(ArticleIDs) +\
     "including these polymorphisms on pubmed.")
-    
+
     return ArticleIDs
+
 
 def getArticleBank(searchFunction, keyword):
     ArticleIDs = searchFunction(keyword)
@@ -93,6 +95,9 @@ if __name__ == '__main__':
         else:
             print("Starting serial read on %i articles." % len(ArticleBank))
             ArticleBank = evaluateArticles(ArticleBank, options)
+            if options.makeDoiList:
+                doiList = [a['DOI'] for a in ArticleBank if a['DOI']]
+                open('doilist.txt', 'w').write('\n'.join(doiList))
             serialRead(ArticleBank)
 
     elif not options.Info:

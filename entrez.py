@@ -2,7 +2,7 @@
 from Bio import Entrez
 from urllib.error import HTTPError
 import xmltodict
-
+import json
 Entrez.email = "space_monster@hotmail.com"
 def parsedEntrezSearch(**kwargs):
 
@@ -19,9 +19,17 @@ def parsedEntrezSearch(**kwargs):
         return ResultList
     return []
 
+
 def getArticleInfo(UID):
     INFO = Entrez.esummary(db='pubmed', id=UID)
     INFO = Entrez.read(INFO)[0]
+
+    # some articles got no DOI;
+    try:
+        DOI = INFO['DOI']
+    except Exception as e:
+        # print(json.dumps(INFO, indent=2))
+        DOI = None
 
     ArticleData = {'title': INFO['Title'],
                    'uid': INFO['Id'],
@@ -29,7 +37,7 @@ def getArticleInfo(UID):
                    'refcount': INFO['PmcRefCount'],
                    'journal': INFO['FullJournalName'],
                    'authors': '; '.join(INFO['AuthorList']),
-
+                   'DOI': DOI,
                    # attributes not found on esummary;
                    'abstract': [],
                    'keywords': ''

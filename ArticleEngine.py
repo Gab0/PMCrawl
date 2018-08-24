@@ -75,7 +75,12 @@ def serialRead(ArticleBank, COMM=None):
             continue
         if A==len(ArticleBank)-1:
             print("Last article;\n\tPressing ENTER will terminate session.")
-        k=input()
+            
+        try:
+            k=input()
+        except KeyboardInterrupt:
+            exit("\n\tSession ended by user.\n")
+            
         if 'v' in k:
             print("Opening article in browser;")
             webbrowser.open(URL)
@@ -134,7 +139,7 @@ def parseAbstract(Abstract):
     return Abstract
 
 
-def evaluateArticles(RawArticles, options, Verbose=True):
+def evaluateArticles(RawArticles, options=False, Verbose=True):
     ArticleBank=[]
     ArticleQuantity = len(RawArticles)
     N=0
@@ -143,6 +148,7 @@ def evaluateArticles(RawArticles, options, Verbose=True):
         ENTRY = IDBase[0]
         UID = str(ENTRY)
         Article_ = Article['MedlineCitation']
+
         try:
             ABSTRACT = Article_['Article']['Abstract']['AbstractText']
             ABSTRACT = ABSTRACT[0] if type(ABSTRACT) == list else ABSTRACT
@@ -168,12 +174,14 @@ def evaluateArticles(RawArticles, options, Verbose=True):
         N+=1
         if Verbose:
             print("%.2f%%" % (N/ArticleQuantity*100))
-        
-        if options.Recent and ArticleData['year'] < options.Recent:
-            continue
-        if options.Relevance and ArticleData['refcount'] < options.Relevance:
-            continue
 
+        if options:
+            if options.Recent:
+                if ArticleData['year'] < options.Recent:
+                    continue
+            if options.Relevance:
+                if ArticleData['refcount'] < options.Relevance:
+                    continue
 
         ArticleBank.append(ArticleData)
 
