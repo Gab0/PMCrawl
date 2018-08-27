@@ -143,7 +143,15 @@ def evaluateArticles(RawArticles, options=False, Verbose=True):
     ArticleBank=[]
     ArticleQuantity = len(RawArticles)
     N=0
-    for Article in RawArticles:
+
+
+    batchUIDs = [str(Article["PubmedData"]["ArticleIdList"][0])
+                 for Article in RawArticles]
+
+    print(batchUIDs)
+    fullArticleInfos = getArticleInfo(batchUIDs)
+    print(fullArticleInfos)
+    for i, Article in enumerate(RawArticles):
         IDBase = Article['PubmedData']['ArticleIdList']
         ENTRY = IDBase[0]
         UID = str(ENTRY)
@@ -158,8 +166,9 @@ def evaluateArticles(RawArticles, options=False, Verbose=True):
             ABSTRACT = []
             pass
 
+
         try: # try maybe not neccessary;
-            ArticleData = getArticleInfo(UID)
+            ArticleData = fullArticleInfos[i]
         except:
             print(sys.exc_info()[0])
             raise
@@ -168,10 +177,10 @@ def evaluateArticles(RawArticles, options=False, Verbose=True):
         ArticleData['abstract'] = ABSTRACT
         try:
             ArticleData['keywords'] = Article_['KeywordList'][0]
-        except:
+        except Exception as e:
             pass
-                
-        N+=1
+
+        N += 1
         if Verbose:
             print("%.2f%%" % (N/ArticleQuantity*100))
 

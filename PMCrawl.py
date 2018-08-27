@@ -11,13 +11,14 @@ import xmltodict
 
 from ArticleEngine import evaluateArticles, serialRead, backgroundRenderingRead
 from entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
-from snpedia import searchSnpedia
+#from snpedia import searchSnpedia
 from Options import options, args
 
 import warnings # SUPRESS ALL WARNINGS; BAD IDEA;
 warnings.filterwarnings("ignore")
 
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+# why?
+# os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 from multiprocessing import Process, Pipe
 
@@ -77,12 +78,12 @@ if __name__ == '__main__':
 
     if options.Info:
         ArticleInfo = getArticleBank(pubmedSearch, options.Info)
-        ArticleInfo = evaluateArticles(ArticleInfo,options)[0]
+        ArticleInfo = evaluateArticles(ArticleInfo, options)[0]
         print("%s\n%s\n%s %s [%s]" % (ArticleInfo['authors'],
-                                       ArticleInfo['title'],
-                                       ArticleInfo['journal'],
-                                       ArticleInfo['year'],
-                                       ArticleInfo['uid']))
+                                      ArticleInfo['title'],
+                                      ArticleInfo['journal'],
+                                      ArticleInfo['year'],
+                                      ArticleInfo['uid']))
 
     if ArticleBank:
         if options.ASYNC:
@@ -97,7 +98,19 @@ if __name__ == '__main__':
             ArticleBank = evaluateArticles(ArticleBank, options)
             if options.makeDoiList:
                 doiList = [a['DOI'] for a in ArticleBank if a['DOI']]
-                open('doilist.txt', 'w').write('\n'.join(doiList))
+                print("Writing DOI list.")
+                with open('doilist.txt', 'w') as outputFile:
+                    outputFile.write('\n'.join(doiList))
+
+            if options.saveAbstractBatch:
+                def normalizeAbstract(abstract):
+                    if type(abstract) == list:
+                        abstract = '\n'.join(abstract)
+                    return abstract
+                abstractBatch = [normalizeAbstract(a['abstract']) for a in ArticleBank if a['abstract']]
+
+                with open('abstractBatch.txt', 'w') as outputFile:
+                    outputFile.write('\n\n'.join(abstractBatch))
             serialRead(ArticleBank)
 
     elif not options.Info:

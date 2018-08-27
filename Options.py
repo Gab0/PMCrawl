@@ -21,4 +21,6 @@ parser.add_option('-l', dest='ShowList', action='store_true', default=False, hel
 
 parser.add_option('-d', dest='makeDoiList', action='store_true', default=False, help='Write a doi list of search results.')
 
+parser.add_option('-A', dest='saveAbstractBatch', action='store_true', default=False, help='Save abstracts of all results on text file.')
+
 options, args = parser.parse_args()

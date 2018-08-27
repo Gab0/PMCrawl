@@ -3,7 +3,7 @@ from Bio import Entrez
 from urllib.error import HTTPError
 import xmltodict
 import json
-Entrez.email = "space_monster@hotmail.com"
+Entrez.email = "space_damonster@hotmail.com"
 def parsedEntrezSearch(**kwargs):
 
     RESULT = Entrez.esearch(**kwargs)
@@ -20,30 +20,35 @@ def parsedEntrezSearch(**kwargs):
     return []
 
 
-def getArticleInfo(UID):
-    INFO = Entrez.esummary(db='pubmed', id=UID)
-    INFO = Entrez.read(INFO)[0]
-
+def getArticleInfo(UIDs):
+    ArticleInfos = Entrez.esummary(db='pubmed', id=",".join(UIDs))
+    ArticleInfos = Entrez.read(ArticleInfos)
     # some articles got no DOI;
-    try:
-        DOI = INFO['DOI']
-    except Exception as e:
-        # print(json.dumps(INFO, indent=2))
-        DOI = None
 
-    ArticleData = {'title': INFO['Title'],
-                   'uid': INFO['Id'],
-                   'year': int(INFO['SO'][:4]),
-                   'refcount': INFO['PmcRefCount'],
-                   'journal': INFO['FullJournalName'],
-                   'authors': '; '.join(INFO['AuthorList']),
-                   'DOI': DOI,
-                   # attributes not found on esummary;
-                   'abstract': [],
-                   'keywords': ''
-                   }
+    batchArticleData = []
+    for INFO in ArticleInfos:
+        try:
+            DOI = INFO['DOI']
+        except Exception as e:
+            # print(json.dumps(INFO, indent=2))
+            DOI = None
 
-    return ArticleData
+        ArticleData = {
+            'title': INFO['Title'],
+            'uid': INFO['Id'],
+            'year': int(INFO['SO'][:4]),
+            'refcount': INFO['PmcRefCount'],
+            'journal': INFO['FullJournalName'],
+            'authors': '; '.join(INFO['AuthorList']),
+            'DOI': DOI,
+            # attributes not found on esummary;
+            'abstract': [],
+            'keywords': ''
+            }
+        batchArticleData.append(ArticleData)
+
+    return batchArticleData
+
 
 def searchSNPs(Query):
     SNP_LIST = parsedEntrezSearch(db='snp', term=Query, retmax=25000)
