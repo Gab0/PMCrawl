@@ -1,0 +1,6 @@
+#!/bin/python
+
+import pmccrawl
+
+if __name__ == "__main__":
+    pmccrawl.runSearch()
