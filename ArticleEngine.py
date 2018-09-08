@@ -148,9 +148,8 @@ def evaluateArticles(RawArticles, options=False, Verbose=True):
     batchUIDs = [str(Article["PubmedData"]["ArticleIdList"][0])
                  for Article in RawArticles]
 
-    print(batchUIDs)
     fullArticleInfos = getArticleInfo(batchUIDs)
-    print(fullArticleInfos)
+
     for i, Article in enumerate(RawArticles):
         IDBase = Article['PubmedData']['ArticleIdList']
         ENTRY = IDBase[0]
