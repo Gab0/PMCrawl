@@ -19,8 +19,11 @@ parser.add_option('-a', '--async', dest='ASYNC', action='store_true',
                   default=False, help='Run in async mode.')
 parser.add_option('-l', dest='ShowList', action='store_true', default=False, help='show list of results as csv PMIDs')
 
+# build lists options;
 parser.add_option('-d', dest='makeDoiList', action='store_true', default=False, help='Write a doi list of search results.')
+parser.add_option('-P', dest='makePMCIDList', action='store_true', default=False, help='Write a pmcid list of search results.')
 
 parser.add_option('-A', dest='saveAbstractBatch', action='store_true', default=False, help='Save abstracts of all results on text file.')
 
+parser.add_option("-b", dest='blacklist', default='')
 options, args = parser.parse_args()

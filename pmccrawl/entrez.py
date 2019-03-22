@@ -3,14 +3,19 @@ from Bio import Entrez
 from urllib.error import HTTPError
 import xmltodict
 import json
-Entrez.email = "space_damonster@hotmail.com"
+
+
+# modify this;
+Entrez.email = "anon@hotmail.com"
+
+
 def parsedEntrezSearch(**kwargs):
 
     RESULT = Entrez.esearch(**kwargs)
     RESULT = Entrez.read(RESULT)
     try:
         ResultList = RESULT['IdList']
-    except:
+    except Exception as e:
         print(ResultList)
         raise
         return []
@@ -20,6 +25,17 @@ def parsedEntrezSearch(**kwargs):
     return []
 
 
+def extractOptionalFeature(Info, keyList):
+
+    for k in keyList:
+        try:
+            Info = Info[k]
+        except KeyError as e:
+            return None
+
+    return Info
+
+
 def getArticleInfo(UIDs):
     ArticleInfos = Entrez.esummary(db='pubmed', id=",".join(UIDs))
     ArticleInfos = Entrez.read(ArticleInfos)
@@ -27,11 +43,7 @@ def getArticleInfo(UIDs):
 
     batchArticleData = []
     for INFO in ArticleInfos:
-        try:
-            DOI = INFO['DOI']
-        except Exception as e:
-            # print(json.dumps(INFO, indent=2))
-            DOI = None
+        print(json.dumps(INFO, indent=2))
 
         ArticleData = {
             'title': INFO['Title'],
@@ -40,7 +52,8 @@ def getArticleInfo(UIDs):
             'refcount': INFO['PmcRefCount'],
             'journal': INFO['FullJournalName'],
             'authors': '; '.join(INFO['AuthorList']),
-            'DOI': DOI,
+            'DOI': extractOptionalFeature(INFO, ["DOI"]),
+            'PMC': extractOptionalFeature(INFO, ["ArticleIds", "pmc"]),
             # attributes not found on esummary;
             'abstract': [],
             'keywords': ''

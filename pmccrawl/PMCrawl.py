@@ -49,6 +49,15 @@ def getArticleBank(searchFunction, keyword):
     return ArticleBank
 
 
+def getListFromBank(ArticleBank, attributeName):
+
+    doiList = [a[attributeName]
+               for a in ArticleBank
+               if a[attributeName]]
+
+    return doiList
+
+
 def runSearch():
     #print(options)
     ArticleBank = []
@@ -78,6 +87,7 @@ def runSearch():
                                       ArticleInfo['uid']))
 
     if ArticleBank:
+        # USELESS?
         if options.ASYNC:
             send, receive = Pipe()
             S = Process(target=backgroundRenderingRead,
@@ -88,21 +98,38 @@ def runSearch():
         else:
             print("Starting serial read on %i articles." % len(ArticleBank))
             ArticleBank = evaluateArticles(ArticleBank, options)
+
+            # BUILD LISTS FROM SEARCH RESULTS;
             if options.makeDoiList:
-                doiList = [a['DOI'] for a in ArticleBank if a['DOI']]
                 print("Writing DOI list.")
+                doiList = getListFromBank(ArticleBank, "DOI")
                 with open('doilist.txt', 'w') as outputFile:
                     outputFile.write('\n'.join(doiList))
+
+            if options.makePMCIDList:
+                pmcidList = getListFromBank(ArticleBank, "PMC")
+                with open("pmcidlist.txt", 'w') as outputFile:
+                    outputFile.write('\n'.join(pmcidList))
 
             if options.saveAbstractBatch:
                 def normalizeAbstract(abstract):
                     if type(abstract) == list:
                         abstract = '\n'.join(abstract)
                     return abstract
-                abstractBatch = [normalizeAbstract(a['abstract']) for a in ArticleBank if a['abstract']]
+                abstractBatch = [normalizeAbstract(a['abstract'])
+                                 for a in ArticleBank if a['abstract']]
 
                 with open('abstractBatch.txt', 'w') as outputFile:
                     outputFile.write('\n\n'.join(abstractBatch))
+            if options.blacklist:
+                blacklist = open(options.blacklist).read().split('\n')
+
+                bArticleBank = [a for a in ArticleBank
+                                if a['uid'] not in blacklist]
+                nb_blacklisted = len(ArticleBank) - len(bArticleBank)
+                ArticleBank = bArticleBank
+                print("Blacklist blocks %i articles." % nb_blacklisted)
+
             serialRead(ArticleBank)
 
     elif not options.Info:

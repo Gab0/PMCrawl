@@ -50,7 +50,7 @@ def serialRead(ArticleBank, COMM=None):
     A = -1
     while A < len(ArticleBank):
         A = 0 if A < 0 else A
-        if (COMM and A==len(ArticleBank)-1) or \
+        if (COMM and A == len(ArticleBank)-1) or \
            (COMM and not ArticleBank):
             print("Loading more Articles...")
             ArticleBank += COMM.recv()
@@ -119,11 +119,11 @@ def backgroundRenderingRead(ArticleList, options, PIPE):
     for k in range(0, len(ArticleList), DIVISOR):
         BLOCK = evaluateArticles(ArticleList[ k:k+DIVISOR ], options, Verbose=False)
         PIPE.send(BLOCK)
-        
-                   
+
+
 def parseAbstract(Abstract):
     #print("DEBUG Abstract is a %s.\n" % type(Abstract))
-    
+
     if type(Abstract) != list:
         Abstract = [str(Abstract)]
     else:
@@ -131,7 +131,7 @@ def parseAbstract(Abstract):
             Abstract = [ Abstract[x] for x in Abstract.keys() ]
         except:
             pass
-        
+
     if type(Abstract[0]) == list:
         Abstract = Abstract[0]
         try:
@@ -143,7 +143,7 @@ def parseAbstract(Abstract):
     return Abstract
 
 
-def evaluateArticles(RawArticles, options=False, Verbose=True):
+def evaluateArticles(RawArticles, options=False, Verbose=False):
     ArticleBank = []
     ArticleQuantity = len(RawArticles)
     N = 0
