@@ -1,8 +1,8 @@
 #!/bin/python
 import sys
 
-from Bio import Entrez
 
+import os
 from .ArticleEngine import evaluateArticles, serialRead, backgroundRenderingRead
 from .entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
 # from snpedia import searchSnpedia
@@ -107,8 +107,10 @@ def runSearch():
                     outputFile.write('\n'.join(doiList))
 
             if options.makePMCIDList:
+                pmidpath = "pmcidlist.txt"
+                print("Writing PMID list to %s" % os.path.abspath(pmidpath))
                 pmcidList = getListFromBank(ArticleBank, "PMC")
-                with open("pmcidlist.txt", 'w') as outputFile:
+                with open(pmidpath, 'w') as outputFile:
                     outputFile.write('\n'.join(pmcidList))
 
             if options.saveAbstractBatch:
@@ -121,6 +123,7 @@ def runSearch():
 
                 with open('abstractBatch.txt', 'w') as outputFile:
                     outputFile.write('\n\n'.join(abstractBatch))
+
             if options.blacklist:
                 blacklist = open(options.blacklist).read().split('\n')
 

@@ -3,6 +3,7 @@ from Bio import Entrez
 from urllib.error import HTTPError
 import xmltodict
 import json
+import re
 
 
 # modify this;
@@ -45,10 +46,14 @@ def getArticleInfo(UIDs):
     for INFO in ArticleInfos:
         print(json.dumps(INFO, indent=2))
 
+        # parse year;
+        YEAR = re.findall("\d{4}", INFO['SO'])
+        YEAR = int(YEAR[0]) if YEAR else 0
+
         ArticleData = {
             'title': INFO['Title'],
             'uid': INFO['Id'],
-            'year': int(INFO['SO'][:4]),
+            'year': YEAR,
             'refcount': INFO['PmcRefCount'],
             'journal': INFO['FullJournalName'],
             'authors': '; '.join(INFO['AuthorList']),
@@ -72,16 +77,18 @@ def searchSNPs(Query):
     P=xmltodict.parse(RawRSIDs)
     ResultList = P['ExchangeSet']['Rs']
     #print(ResultList)
-    RSIDs = [ 'rs' + R['@rsId'] for R in ResultList ]
+    RSIDs = ['rs' + R['@rsId'] for R in ResultList]
     #print(RSIDs)
 
     return RSIDs
+
 
 def pubmedSearch(SearchTerm):
     PUBMED_IDLIST = parsedEntrezSearch(db='pubmed',
                                        term=SearchTerm, retmax=25000)
 
     return PUBMED_IDLIST
+
 
 def pubmedFetchArticles(PUBMED_IDLIST):
     RawArticles = Entrez.efetch(db='pubmed', id=PUBMED_IDLIST,

@@ -3,6 +3,8 @@
 import optparse
 
 parser = optparse.OptionParser()
+
+# search source selection options;
 parser.add_option('-n', '--snp', dest='SNP', default='')
 parser.add_option('-S','--search', dest='Search', action='store_true', default=False)
 parser.add_option('-m','--pubmed', dest='PubmedSearch', default='')
