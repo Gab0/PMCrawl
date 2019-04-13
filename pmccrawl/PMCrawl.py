@@ -107,7 +107,7 @@ def runSearch():
                     outputFile.write('\n'.join(doiList))
 
             if options.makePMCIDList:
-                pmidpath = "pmcidlist.txt"
+                pmidpath = options.makePMCIDList
                 print("Writing PMID list to %s" % os.path.abspath(pmidpath))
                 pmcidList = getListFromBank(ArticleBank, "PMC")
                 with open(pmidpath, 'w') as outputFile:

@@ -23,9 +23,13 @@ parser.add_option('-l', dest='ShowList', action='store_true', default=False, hel
 
 # build lists options;
 parser.add_option('-d', dest='makeDoiList', action='store_true', default=False, help='Write a doi list of search results.')
-parser.add_option('-P', dest='makePMCIDList', action='store_true', default=False, help='Write a pmcid list of search results.')
 
-parser.add_option('-A', dest='saveAbstractBatch', action='store_true', default=False, help='Save abstracts of all results on text file.')
+parser.add_option('-P',
+                  dest='makePMCIDList',
+                  help='Write a pmcid list of search results to specified file.')
+
+parser.add_option('-A', dest='saveAbstractBatch', action='store_true',
+                  default=False, help='Save abstracts of all results on text file.')
 
 parser.add_option("-b", dest='blacklist', default='')
 options, args = parser.parse_args()
