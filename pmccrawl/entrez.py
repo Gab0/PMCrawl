@@ -44,7 +44,7 @@ def getArticleInfo(UIDs):
 
     batchArticleData = []
     for INFO in ArticleInfos:
-        print(json.dumps(INFO, indent=2))
+        # print(json.dumps(INFO, indent=2))
 
         # parse year;
         YEAR = re.findall("\d{4}", INFO['SO'])

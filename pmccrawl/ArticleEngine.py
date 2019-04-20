@@ -170,15 +170,13 @@ def evaluateArticles(RawArticles, options=False, Verbose=False):
                 print(e)
             ABSTRACT = []
 
-
-
         try: # try - not neccessary;
             ArticleData = fullArticleInfos[i]
         except Exception as e:
             print(sys.exc_info()[0])
             raise
             continue
-
+ 
         ArticleData['abstract'] = ABSTRACT
         try:
             ArticleData['keywords'] = Article_['KeywordList'][0]
