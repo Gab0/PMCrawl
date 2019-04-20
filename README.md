@@ -9,9 +9,10 @@ This is set of tools to:
 
 ### Usage
 
-Designed for python3.6;
+Designed for Python 3;
 
 ```
-$ sudo pip -r requirements.txt
-$ python article_view.py --help
+$sudo pip install -r requirements.txt
+$sudo pip install .
+$pmcc "Tropical Diseases"
 ```
