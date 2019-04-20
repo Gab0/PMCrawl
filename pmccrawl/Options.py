@@ -32,4 +32,8 @@ parser.add_option('-A', dest='saveAbstractBatch', action='store_true',
                   default=False, help='Save abstracts of all results on text file.')
 
 parser.add_option("-b", dest='blacklist', default='')
+
+
+# behavior options;
+parser.add_option("-e", dest='searchAndExit', action='store_true')
 options, args = parser.parse_args()

@@ -9,7 +9,8 @@ from .entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
 from .Options import options, args
 
 from multiprocessing import Pipe, Process
-import warnings # SUPRESS ALL WARNINGS; BAD IDEA;
+# SUPRESS ALL WARNINGS; BAD IDEA;
+import warnings
 warnings.filterwarnings("ignore")
 
 '''
@@ -51,15 +52,16 @@ def getArticleBank(searchFunction, keyword):
 
 def getListFromBank(ArticleBank, attributeName):
 
-    doiList = [a[attributeName]
-               for a in ArticleBank
-               if a[attributeName]]
+    doiList = [
+        a[attributeName]
+        for a in ArticleBank
+        if a[attributeName]
+    ]
 
     return doiList
 
 
 def runSearch():
-    #print(options)
     ArticleBank = []
 
     if options.SNP:
@@ -110,6 +112,7 @@ def runSearch():
                 pmidpath = options.makePMCIDList
                 print("Writing PMID list to %s" % os.path.abspath(pmidpath))
                 pmcidList = getListFromBank(ArticleBank, "PMC")
+                print("\tPMID rate: %.2f%%" % (100 * len(pmcidList) / len(ArticleBank)))
                 with open(pmidpath, 'w') as outputFile:
                     outputFile.write('\n'.join(pmcidList))
 
@@ -133,7 +136,8 @@ def runSearch():
                 ArticleBank = bArticleBank
                 print("Blacklist blocks %i articles." % nb_blacklisted)
 
-            serialRead(ArticleBank)
+            if not options.searchAndExit:
+                serialRead(ArticleBank)
 
     elif not options.Info:
         print("No articles found.")

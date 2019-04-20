@@ -165,8 +165,9 @@ def evaluateArticles(RawArticles, options=False, Verbose=False):
             ABSTRACT = ABSTRACT[0] if type(ABSTRACT) == list else ABSTRACT
             ABSTRACT = parseAbstract(ABSTRACT)
         except Exception as e:
-            print("Failed to read Abstract.")
-            print(e)
+            if Verbose:
+                print("Failed to read Abstract.")
+                print(e)
             ABSTRACT = []
 
 
