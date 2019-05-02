@@ -5,7 +5,9 @@ import sys
 import os
 from .ArticleEngine import evaluateArticles, serialRead, backgroundRenderingRead
 from .entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
-# from snpedia import searchSnpedia
+
+from .snpedia import searchSnpedia
+
 from .Options import options, args
 
 from multiprocessing import Pipe, Process
@@ -61,6 +63,17 @@ def getListFromBank(ArticleBank, attributeName):
     return doiList
 
 
+def parseQuery(options):
+    if options.allKeywords:
+        words = options.PubmedSearch.split(" ")
+        Query = " AND ".join(words)
+
+    else:
+        Query = options.PubmedSearch
+
+    return Query
+
+
 def runSearch():
     ArticleBank = []
 
@@ -77,7 +90,9 @@ def runSearch():
                 options.PubmedSearch = sys.argv[1]
             else:
                 exit("No query provided.")
-        ArticleBank += getArticleBank(pubmedSearch, options.PubmedSearch)
+
+        PubmedQuery = parseQuery(options)
+        ArticleBank += getArticleBank(pubmedSearch, PubmedQuery)
 
     if options.Info:
         ArticleInfo = getArticleBank(pubmedSearch, options.Info)
