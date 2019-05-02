@@ -3,12 +3,13 @@ import sys
 
 
 import os
-from .ArticleEngine import evaluateArticles, serialRead, backgroundRenderingRead
+from .ArticleEngine import evaluateArticles
+from .ArticleEngine import serialRead, backgroundRenderingRead
 from .entrez import pubmedSearch, pubmedFetchArticles, searchSNPs
 
-from .snpedia import searchSnpedia
+# from .snpedia import searchSnpedia
 
-from .Options import options, args
+from .Options import options
 
 from multiprocessing import Pipe, Process
 # SUPRESS ALL WARNINGS; BAD IDEA;
@@ -37,7 +38,7 @@ def searchGene_dbSNPArticles(GeneName):
     if not ArticleIDs:
         print("Polymorphism list results zero on pubmed search.")
         return []
-    print("Found %i articles " % len(ArticleIDs) + \
+    print("Found %i articles " % len(ArticleIDs) +
           "including these polymorphisms on pubmed.")
 
     return ArticleIDs
@@ -81,13 +82,16 @@ def runSearch():
         for GeneName in options.SNP.split(' '):
             ArticleBank += getArticleBank(searchGene_dbSNPArticles, GeneName)
     elif options.snpedia:
-        ArticleBank += getArticleBank(searchSnpedia, options.snpedia)
+        print("DEPRECATED.")
+        exit(1)
+        # ArticleBank += getArticleBank(searchSnpedia, options.snpedia)
 
     else:
         if not options.PubmedSearch:
             # following subterfuge is questionable.
-            if len(sys.argv) > 1:
-                options.PubmedSearch = sys.argv[1]
+            PseudoSearch = " ".join(sys.argv[1:])
+            if '-' not in PseudoSearch:
+                options.PubmedSearch = PseudoSearch
             else:
                 exit("No query provided.")
 
@@ -110,7 +114,8 @@ def runSearch():
             S = Process(target=backgroundRenderingRead,
                         args=(ArticleBank, options, send))
             S.start()
-            print("Starting async serial read on %i articles." % len(ArticleBank))
+            print("Starting async serial read on %i articles." %
+                  len(ArticleBank))
             serialRead([], COMM=receive)
         else:
             print("Starting serial read on %i articles." % len(ArticleBank))
@@ -127,7 +132,8 @@ def runSearch():
                 pmidpath = options.makePMCIDList
                 print("Writing PMID list to %s" % os.path.abspath(pmidpath))
                 pmcidList = getListFromBank(ArticleBank, "PMC")
-                print("\tPMID rate: %.2f%%" % (100 * len(pmcidList) / len(ArticleBank)))
+                print("\tPMID rate: %.2f%%" %
+                      (100 * len(pmcidList) / len(ArticleBank)))
                 with open(pmidpath, 'w') as outputFile:
                     outputFile.write('\n'.join(pmcidList))
 
