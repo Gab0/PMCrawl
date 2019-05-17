@@ -53,13 +53,13 @@ def getArticleBank(searchFunction, keyword):
     return ArticleBank
 
 
-def getListFromBank(ArticleBank, attributeName):
-
-    doiList = [
-        a[attributeName]
-        for a in ArticleBank
-        if a[attributeName]
-    ]
+def getListFromBank(ArticleBank, attributeNames):
+    doiList = []
+    for a in ArticleBank:
+        for attr in attributeNames:
+            if a[attr]:
+                doiList.append(a[attr])
+                break
 
     return doiList
 
@@ -109,7 +109,8 @@ def runSearch():
 
     if ArticleBank:
         # USELESS?
-        if options.ASYNC:
+        # if options.ASYNC:
+        if False:
             send, receive = Pipe()
             S = Process(target=backgroundRenderingRead,
                         args=(ArticleBank, options, send))
@@ -122,20 +123,26 @@ def runSearch():
             ArticleBank = evaluateArticles(ArticleBank, options)
 
             # BUILD LISTS FROM SEARCH RESULTS;
-            if options.makeDoiList:
-                print("Writing DOI list.")
-                doiList = getListFromBank(ArticleBank, "DOI")
-                with open('doilist.txt', 'w') as outputFile:
-                    outputFile.write('\n'.join(doiList))
+            ListIdentifiers = {
+                "d": "DOI",
+                "p": "PMC",
+                "i": "uid"
+            }
 
-            if options.makePMCIDList:
-                pmidpath = options.makePMCIDList
-                print("Writing PMID list to %s" % os.path.abspath(pmidpath))
-                pmcidList = getListFromBank(ArticleBank, "PMC")
+            if options.ShowList:
+                Identifiers = [
+                    ListIdentifiers[idt]
+                    for idt in options.ListAttributes
+                    if idt in ListIdentifiers.keys()
+                ]
+                print("Writing article identifier list: %s." %
+                      "/".join(Identifiers))
+                articleIdentifierList = getListFromBank(ArticleBank, Identifiers)
+                with open(options.ListPath, 'w') as outputFile:
+                    outputFile.write('\n'.join(articleIdentifierList))
+
                 print("\tPMID rate: %.2f%%" %
-                      (100 * len(pmcidList) / len(ArticleBank)))
-                with open(pmidpath, 'w') as outputFile:
-                    outputFile.write('\n'.join(pmcidList))
+                      (100 * len(articleIdentifierList) / len(ArticleBank)))
 
             if options.saveAbstractBatch:
                 def normalizeAbstract(abstract):
