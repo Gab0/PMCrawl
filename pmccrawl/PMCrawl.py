@@ -46,8 +46,6 @@ def searchGene_dbSNPArticles(GeneName):
 
 def getArticleBank(searchFunction, keyword):
     ArticleIDs = searchFunction(keyword)
-    if options.ShowList:
-        print(', '.join(ArticleIDs))
     ArticleBank = pubmedFetchArticles(ArticleIDs) if ArticleIDs else []
 
     return ArticleBank
@@ -129,7 +127,7 @@ def runSearch():
                 "i": "uid"
             }
 
-            if options.ShowList:
+            if options.ListPath:
                 Identifiers = [
                     ListIdentifiers[idt]
                     for idt in options.ListAttributes
