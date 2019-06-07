@@ -21,10 +21,9 @@ parser.add_option('-F', '--filter', dest='Filter', default='')
 #                  default=False, help='Run in async mode.')
 
 # Output List Options;
-parser.add_option('-l', dest='ShowList',
-                  action='store_true',
-                  default=False,
-                  help='show list of results as csv PMIDs')
+parser.add_option('-l', dest='ListPath',
+                  default="",
+                  help="Selects the path to save the article list, enabling the article list writing.")
 
 parser.add_option(
     '--la',
@@ -35,12 +34,6 @@ parser.add_option(
     ' it writes the second and so on. Set: <pdi> -> PMC, DOI, ID'
 )
 
-parser.add_option(
-    '--lp',
-    dest="ListPath",
-    default="articlelist.txt",
-    help="Selects the path to save the article list."
-)
 
 parser.add_option('-A', dest='saveAbstractBatch', action='store_true',
                   default=False, help='Save abstracts of all results on text file.')
